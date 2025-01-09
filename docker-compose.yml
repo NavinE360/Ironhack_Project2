@@ -1,40 +1,49 @@
 version: '3.8'
-
 services:
-  backend:
-    build:
-      context: ./api
-      dockerfile: Dockerfile
-    ports:
-      - "5001:5000" # Map API service to port 5000
-    environment:
-      - NODE_ENV=development # Example environment variable
-      - DATABASE_URL=postgresql://postgres:password@db:5432/mydb
-    networks:
-      - app-network
-    depends_on:
-      - db
-
-  frontend:
-    build:
-      context: ./ui
-      dockerfile: Dockerfile
-    ports:
-      - "3000:3000" # Map frontend service to port 3000
-    networks:
-      - app-network
-
-  db:
-    image: postgres:latest
-    ports:
-      - "5432:5432"
+  # PostgreSQL Database Service
+  basic-3tier-postgres:
+    image: postgres:15.1
+    container_name: basic-3tier-postgres
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: mydb
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_DB: basic3tier
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
     networks:
-      - app-network
+      - basic3tier
+
+  # .NET Core WebAPI Service
+  webapi:
+    image: navin360/backend0901
+    container_name: basic-3tier-api
+    ports:
+      - "7000:80"
+    depends_on:
+      - basic-3tier-postgres
+    environment:
+      ConnectionStrings__Basic3Tier: "Host=basic-3tier-postgres;Port=5432;Database=basic3tier;Username=postgres;Password=admin123"
+    networks:
+      - basic3tier
+
+  # Frontend Application
+  frontend:
+    image: navin360/frontend0901
+    container_name: basic-3tier-ui
+    ports:
+      - "5000:80"
+    networks:
+      - basic3tier
+    volumes:
+      - ./ui/configs:/usr/share/nginx/html/configs:ro
+    depends_on:
+      - webapi
+      - basic-3tier-postgres
+
+volumes:
+  postgres_data:
 
 networks:
-  app-network:
-    driver: bridge
+  basic3tier:
