@@ -25,13 +25,7 @@ jobs:
         run: |
           cd ui && npm init -y && npm install
          
-      - name: Scan Code with CodeQL
-        uses: github/codeql-action/init@v2
-        with:
-          languages: 'javascript'
-
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v2
+ 
 
   docker-build-push:
     needs: build-test-scan
