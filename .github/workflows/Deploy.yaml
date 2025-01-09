@@ -57,7 +57,7 @@ jobs:
 
       - name: Verify Frontend Service is Running
         run: |
-          kubectl rollout status deployment/frontend
+          kubectl rollout status deployment/frontend-deployment
           kubectl get pods -l app=ui
 
       - name: Verify Database Service is Running
