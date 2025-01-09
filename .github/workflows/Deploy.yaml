@@ -27,17 +27,17 @@ jobs:
     - name: Set up SSH private key
       run: |
         mkdir -p ~/.ssh
-        echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/my-key.pem
-        chmod 600 ~/.ssh/my-key.pem  # Set appropriate permissions for the private key
+        echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/tok.pem
+        chmod 600 ~/.ssh/tok.pem  # Set appropriate permissions for the private key
 
     - name: Ensure target directory exists on EC2
       run: |
-        ssh -i ~/.ssh/my-key.pem ubuntu@13.233.97.90 << 'EOF'
+        ssh -i ~/.ssh/tok.pem ubuntu@13.233.97.90 << 'EOF'
         mkdir -p /target-directory
         EOF
 
     - name: Set up kubectl for EKS
-      uses: aws-actions/amazon-eks-update-kubeconfig@v1
+      uses: aws-actions/configure-aws-credentials@v2
       with:
         cluster-name: ${{ secrets.EKS_CLUSTER_NAME }}
         region: ${{ secrets.AWS_REGION }}
