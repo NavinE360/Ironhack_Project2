@@ -23,13 +23,13 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          cd frontend && npm install
-          cd ../backend && npm install
+          cd ui && npm install
+          cd ../api && npm install
 
       - name: Run Tests
         run: |
-          cd frontend && npm test
-          cd ../backend && npm test
+          cd ui && npm test
+          cd ../api && npm test
 
       - name: Scan Code with CodeQL
         uses: github/codeql-action/init@v2
