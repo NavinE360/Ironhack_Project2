@@ -6530,34 +6530,32 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Geeta\\.nuget\\packages\\": {}
+    "/Users/jenagansivakumar/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\varnode.ai\\Workspace\\basic-3tier-app\\src\\api\\Tests\\Basic3Tier.Infrastructure.Tests\\Basic3Tier.Infrastructure.Tests.csproj",
+      "projectUniqueName": "/Users/jenagansivakumar/Documents/ironhack-projects/group-project/eks-three-tier-app-ironhack/api/Tests/Basic3Tier.Infrastructure.Tests/Basic3Tier.Infrastructure.Tests.csproj",
       "projectName": "Basic3Tier.Infrastructure.Tests",
-      "projectPath": "D:\\varnode.ai\\Workspace\\basic-3tier-app\\src\\api\\Tests\\Basic3Tier.Infrastructure.Tests\\Basic3Tier.Infrastructure.Tests.csproj",
-      "packagesPath": "C:\\Users\\Geeta\\.nuget\\packages\\",
-      "outputPath": "D:\\varnode.ai\\Workspace\\basic-3tier-app\\src\\api\\Tests\\Basic3Tier.Infrastructure.Tests\\obj\\",
+      "projectPath": "/Users/jenagansivakumar/Documents/ironhack-projects/group-project/eks-three-tier-app-ironhack/api/Tests/Basic3Tier.Infrastructure.Tests/Basic3Tier.Infrastructure.Tests.csproj",
+      "packagesPath": "/Users/jenagansivakumar/.nuget/packages/",
+      "outputPath": "/Users/jenagansivakumar/Documents/ironhack-projects/group-project/eks-three-tier-app-ironhack/api/Tests/Basic3Tier.Infrastructure.Tests/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\Geeta\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        "/Users/jenagansivakumar/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net7.0"
       ],
       "sources": {
-        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
         "net7.0": {
           "targetAlias": "net7.0",
           "projectReferences": {
-            "D:\\varnode.ai\\Workspace\\basic-3tier-app\\src\\api\\Basic3Tier.Infrastructure\\Basic3Tier.Infrastructure.csproj": {
-              "projectPath": "D:\\varnode.ai\\Workspace\\basic-3tier-app\\src\\api\\Basic3Tier.Infrastructure\\Basic3Tier.Infrastructure.csproj"
+            "/Users/jenagansivakumar/Documents/ironhack-projects/group-project/eks-three-tier-app-ironhack/api/Basic3Tier.Infrastructure/Basic3Tier.Infrastructure.csproj": {
+              "projectPath": "/Users/jenagansivakumar/Documents/ironhack-projects/group-project/eks-three-tier-app-ironhack/api/Basic3Tier.Infrastructure/Basic3Tier.Infrastructure.csproj"
             }
           }
         }
@@ -6566,7 +6564,13 @@
         "warnAsError": [
           "NU1605"
         ]
-      }
+      },
+      "restoreAuditProperties": {
+        "enableAudit": "true",
+        "auditLevel": "low",
+        "auditMode": "direct"
+      },
+      "SdkAnalysisLevel": "9.0.100"
     },
     "frameworks": {
       "net7.0": {
@@ -6613,7 +6617,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.304\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.101/RuntimeIdentifierGraph.json"
       }
     }
   }

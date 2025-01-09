@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    ports:
+      - "5001:5000" # Map API service to port 5000
+    environment:
+      - NODE_ENV=development # Example environment variable
+      - DATABASE_URL=postgresql://postgres:password@db:5432/mydb
+    networks:
+      - app-network
+    depends_on:
+      - db
+
+  frontend:
+    build:
+      context: ./ui
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000" # Map frontend service to port 3000
+    networks:
+      - app-network
+
+  db:
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: mydb
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
