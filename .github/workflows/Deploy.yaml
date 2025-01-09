@@ -30,12 +30,7 @@ jobs:
         echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/tok.pem
         chmod 600 ~/.ssh/tok.pem  # Set appropriate permissions for the private key
 
-    - name: Ensure target directory exists on EC2
-      run: |
-        ssh -i ~/.ssh/tok.pem ubuntu@13.233.97.90 << 'EOF'
-        mkdir -p /target-directory
-        EOF
-
+  
     - name: Set up kubectl for EKS
       uses: aws-actions/configure-aws-credentials@v2
       with:
