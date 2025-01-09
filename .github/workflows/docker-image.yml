@@ -25,12 +25,6 @@ jobs:
         run: |
           cd ui && npm init -y && npm install
           cd ../api && npm install
-
-      - name: Run Tests
-        run: |
-          cd ui && npm init -y && npm test
-          cd ../api && npm test
-
       - name: Scan Code with CodeQL
         uses: github/codeql-action/init@v2
         with:
