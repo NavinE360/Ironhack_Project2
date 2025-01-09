@@ -52,7 +52,7 @@ jobs:
 
       - name: Verify Backend Service is Running
         run: |
-          kubectl rollout status deployment/backend
+          kubectl rollout status deployment/backend-deployment
           kubectl get pods -l app=api
 
       - name: Verify Frontend Service is Running
@@ -62,7 +62,7 @@ jobs:
 
       - name: Verify Database Service is Running
         run: |
-          kubectl rollout status deployment/database
+          kubectl rollout status deployment/postgres-deployment
           kubectl get pods -l app=database
 
       - name: Verify Application is Accessible
