@@ -28,19 +28,28 @@ jobs:
           
           # SSH into EC2 and execute deployment commands
           ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} '
-              # Clone the new repository or update it if it already exists
-              cd /home/ubuntu || exit
+              set -e
+              echo "SSH connection successful."
+              
+              # Clone the repository or update it if it exists
+              cd /home/ubuntu
               if [ ! -d "Ironhack_Project2" ]; then
                   git clone https://github.com/NavinE360/Ironhack_Project2.git
               fi
-              cd Ironhack_Project2 &&
-              git checkout dev &&
-              git fetch --all &&
-              git reset --hard origin/dev &&
-              git pull origin dev &&
-              sudo npm install &&
-              sudo npm run build &&
-              sudo pm2 stop ./dist/index.js || true &&
+              cd Ironhack_Project2
+              git checkout dev
+              git fetch --all
+              git reset --hard origin/dev
+              git pull origin dev
+
+              # Install dependencies and build
+              sudo npm install
+              sudo npm run build
+
+              # Restart the application using PM2
+              if sudo pm2 list | grep -q "index.js"; then
+                  sudo pm2 stop ./dist/index.js || true
+              fi
               sudo pm2 start ./dist/index.js
           '
 
