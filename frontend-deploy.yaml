@@ -21,7 +21,7 @@ spec:
         - containerPort: 80
         env:
         - name: BACKEND_API_URL
-          value: "http://a0807a113393a407cb6724284b5bd8eb-1382799903.us-west-1.elb.amazonaws.com/"
+          value: "http://a65cda8365cc242099e49e3e8b2d3e89-5742475.ap-northeast-1.elb.amazonaws.com"
 ---
 apiVersion: v1
 kind: Service
