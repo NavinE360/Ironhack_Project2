@@ -57,24 +57,23 @@ jobs:
           aws-region: 'ap-northeast-1'
         
       - name: Update kubeconfig
-        run: aws eks update-kubeconfig --region ap-northeast-1 --name navine
+        run: aws eks update-kubeconfig --region ap-northeast-1 --name navinE
 
       # Step 3: Set up SSH and connect to EC2
       - name: Set up SSH private key
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.EC2_KEY }}" > ~/.ssh/new-my-kp.pem
-          chmod 600 ~/.ssh/new-my-kp.pem
+          echo "${{ secrets.EC2_KEY }}" > ~/.ssh/tok.pem
+          chmod 600 ~/.ssh/tok.pem
           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
       - name: Deploy to EC2
         run: |
-          ssh -i ~/.ssh/new-my-kp.pem ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
+          ssh -i ~/.ssh/tok.pem ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
             rm -rf Ironhack_Project2
             git clone https://github.com/NavinE360/Ironhack_Project2.git
             cd Ironhack_Project2
-            sudo npm install
-            sudo npm run build
+         
           EOF
 
       # Step 4: Deploy to EKS
