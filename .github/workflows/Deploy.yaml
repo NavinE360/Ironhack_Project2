@@ -25,8 +25,8 @@ jobs:
       # Step 3: Build Docker images
       - name: Build Docker images
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/ironhack-project2-api:latest ./api
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/ironhack-project2-ui:latest ./ui
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/navin360/backend0109:latest ./api
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/navin360/backend0109:latest ./ui
 
       # Step 4: Push Docker images to DockerHub
       - name: Log in to DockerHub
@@ -37,9 +37,8 @@ jobs:
 
       - name: Push Docker images
         run: |
-          docker push ${{ secrets.DOCKER_USERNAME }}/ironhack-project2-api:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/ironhack-project2-ui:latest
-
+          docker push ${{ secrets.DOCKER_USERNAME }}/navin360/backend0109:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/navin360/backend0109:latest
   deploy:
     runs-on: self-hosted  # Changed to self-hosted
     needs: build
@@ -55,10 +54,10 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: 'ap-south-1'
+          aws-region: 'ap-northeast-1'
         
       - name: Update kubeconfig
-        run: aws eks update-kubeconfig --region ap-south-1 --name IH-cluster 
+        run: aws eks update-kubeconfig --region ap-northeast-1 --name navine
 
       # Step 3: Set up SSH and connect to EC2
       - name: Set up SSH private key
