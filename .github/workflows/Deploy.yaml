@@ -10,92 +10,82 @@ permissions:
   contents: read
 
 jobs:
-  deploy:
-    runs-on: self-hosted
+  build:
+    runs-on: self-hosted  # Changed to self-hosted
 
     steps:
-      - name: Checkout Code
+      # Step 1: Checkout code
+      - name: Checkout code
         uses: actions/checkout@v3
 
+      # Step 2: Set up Docker
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v2
+
+      # Step 3: Build Docker images
+      - name: Build Docker images
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/ironhack-project2-api:latest ./api
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/ironhack-project2-ui:latest ./ui
+
+      # Step 4: Push Docker images to DockerHub
+      - name: Log in to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Push Docker images
+        run: |
+          docker push ${{ secrets.DOCKER_USERNAME }}/ironhack-project2-api:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/ironhack-project2-ui:latest
+
+  deploy:
+    runs-on: self-hosted  # Changed to self-hosted
+    needs: build
+
+    steps:
+      # Step 1: Checkout code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: Set up AWS CLI
+      - name: Set up AWS CLI
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: 'ap-south-1'
+        
+      - name: Update kubeconfig
+        run: aws eks update-kubeconfig --region ap-south-1 --name IH-cluster 
+
+      # Step 3: Set up SSH and connect to EC2
       - name: Set up SSH private key
-        env:
-          PRIVATE_KEY: ${{ secrets.EC2_KEY }}
-          HOSTNAME: ${{ secrets.EC2_HOST }}
-          USER_NAME: ${{ secrets.USER_NAME }}
         run: |
-          # Save private key to a file
-          echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
-          
-          # SSH into EC2 and execute deployment commands
-          ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} '
-              set -e
-              echo "SSH connection successful."
-              
-              # Clone the repository or update it if it exists
-              cd /home/ubuntu
-              if [ ! -d "Ironhack_Project2" ]; then
-                  git clone https://github.com/NavinE360/Ironhack_Project2.git
-              fi
-              cd Ironhack_Project2
-              git checkout dev
-              git fetch --all
-              git reset --hard origin/dev
-              git pull origin dev
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_KEY }}" > ~/.ssh/new-my-kp.pem
+          chmod 600 ~/.ssh/new-my-kp.pem
+          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
-              # Install dependencies and build
-              sudo npm install
-              sudo npm run build
-
-              # Restart the application using PM2
-              if sudo pm2 list | grep -q "index.js"; then
-                  sudo pm2 stop ./dist/index.js || true
-              fi
-              sudo pm2 start ./dist/index.js
-          '
-
-      - name: Update kubeconfig for EKS
+      - name: Deploy to EC2
         run: |
-          set -x
-          aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name ${{ secrets.EKS_CLUSTER_NAME }}
+          ssh -i ~/.ssh/new-my-kp.pem ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
+            rm -rf Ironhack_Project2
+            git clone https://github.com/NavinE360/Ironhack_Project2.git
+            cd Ironhack_Project2
+            sudo npm install
+            sudo npm run build
+          EOF
 
-      - name: Apply Database Deployment and Service
+      # Step 4: Deploy to EKS
+      - name: Deploy to EKS
         run: |
-          set -x
-          kubectl apply -f k8s/db-deploy.yaml
-          kubectl get pods -l app=database --output wide
-
-      - name: Apply Backend Deployment and Service
-        run: |
-          set -x
-          kubectl apply -f k8s/backend-deploy.yaml
-          kubectl get pods -l app=api --output wide
-
-      - name: Apply Frontend Deployment and Service
-        run: |
-          set -x
-          kubectl apply -f k8s/frontend-deploy.yaml
-          kubectl get pods -l app=ui --output wide
-
-      - name: Verify Backend Service is Running
-        run: |
-          set -x
-          kubectl rollout status deployment/backend-deployment
-          kubectl get pods -l app=api
-
-      - name: Verify Frontend Service is Running
-        run: |
-          set -x
-          kubectl rollout status deployment/frontend-deployment
-          kubectl get pods -l app=ui
-
-      - name: Verify Database Service is Running
-        run: |
-          set -x
-          kubectl rollout status deployment/postgres-deployment
-          kubectl get pods -l app=database
-
-      - name: Verify Application is Accessible
-        run: |
-          set -x
-          FRONTEND_IP=$(kubectl get svc frontend-service -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
-          echo "Frontend is accessible at: http://$FRONTEND_IP"
+          kubectl apply -f ./namespace.yml
+          kubectl apply -f ./db_deploy.yml
+          kubectl apply -f ./db_clusterip.yml
+          kubectl apply -f ./backend_deploy.yml
+          kubectl apply -f ./loadbalancer_backend.yml
+          kubectl apply -f ./configmap.yml
+          kubectl apply -f ./frontend_deploy.yml
+          kubectl apply -f ./loadbalancer_frontend.yml
