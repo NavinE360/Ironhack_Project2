@@ -12,64 +12,72 @@ permissions:
 jobs:
   deploy:
     runs-on: self-hosted
-   
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      
       - name: Set up SSH private key
         run: |
-         mkdir -p ~/.ssh
-         echo "${{ secrets.EC2_KEY }}" > ~/.ssh/tok.pem
-         chmod 600 ~/.ssh/tok.pem  # Set appropriate permissions for the private key
-        # ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+          set -x
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_KEY }}" > ~/.ssh/tok.pem
+          chmod 600 ~/.ssh/tok.pem
+          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+
       - name: Deploy to EC2
-      
         run: |
+          set -x
           ssh -i ~/.ssh/tok.pem ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
+            set -e  # Exit immediately on error
             rm -rf project2
             git clone https://github.com/sakshi12oct/project2.git
-            
             cd project2
           EOF
 
-    
       - name: Update kubeconfig for EKS
         run: |
+          set -x
           aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name ${{ secrets.EKS_CLUSTER_NAME }}
 
       - name: Apply Database Deployment and Service
         run: |
+          set -x
           kubectl apply -f k8s/db-deploy.yaml
-          #kubectl apply -f k8s/db-service.yaml
+          kubectl get pods -l app=database --output wide
 
       - name: Apply Backend Deployment and Service
         run: |
+          set -x
           kubectl apply -f k8s/backend-deploy.yaml
-          #kubectl apply -f k8s/backend-service.yaml
+          kubectl get pods -l app=api --output wide
 
       - name: Apply Frontend Deployment and Service
         run: |
+          set -x
           kubectl apply -f k8s/frontend-deploy.yaml
-          #kubectl apply -f k8s/frontend-service.yaml
+          kubectl get pods -l app=ui --output wide
 
       - name: Verify Backend Service is Running
         run: |
+          set -x
           kubectl rollout status deployment/backend-deployment
           kubectl get pods -l app=api
 
       - name: Verify Frontend Service is Running
         run: |
+          set -x
           kubectl rollout status deployment/frontend-deployment
           kubectl get pods -l app=ui
 
       - name: Verify Database Service is Running
         run: |
+          set -x
           kubectl rollout status deployment/postgres-deployment
           kubectl get pods -l app=database
 
       - name: Verify Application is Accessible
         run: |
+          set -x
           FRONTEND_IP=$(kubectl get svc frontend-service -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
           echo "Frontend is accessible at: http://$FRONTEND_IP"
