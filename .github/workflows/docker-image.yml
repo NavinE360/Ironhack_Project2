@@ -44,19 +44,19 @@ jobs:
 
       - name: Build Frontend Docker Image
         run: |
-          docker build -t navin360/frontend090125:latest ./ui
+          docker build -t navin360/frontend0901:latest ./ui
 
       - name: Build Backend Docker Image
         run: |
-          docker build -t navin360/backend090125:latest ./api
+          docker build -t navin360/backend0901:latest ./api
 
       - name: Push Frontend Docker Image
         run: |
-          docker push navin360/frontend090125:latest
+          docker push navin360/frontend0901:latest
 
       - name: Push Backend Docker Image
         run: |
-          docker push navin360/backend090125:latest
+          docker push navin360/backend0901:latest
 
 
      
