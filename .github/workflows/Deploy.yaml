@@ -29,7 +29,7 @@ jobs:
         run: |
           set -x
           ssh -i ~/.ssh/tok.pem ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
-            set -e  # Exit immediately on error
+            set -e
             rm -rf Ironhack_Project2
             git clone https://github.com/sakshi12oct/project2.git Ironhack_Project2
             cd Ironhack_Project2
