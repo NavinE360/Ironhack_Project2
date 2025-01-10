@@ -34,7 +34,7 @@ jobs:
 
     - name: Push Docker image
       run: |
-        docker push ${{ secrets.DOCKER_USERNAME }}/backend090125:latest:latest
+        docker push ${{ secrets.DOCKER_USERNAME }}/backend090125:latest
         docker push ${{ secrets.DOCKER_USERNAME }}/frontend090125:latest
         #docker push ${{ secrets.DOCKER_USERNAME }}/worker:${{ github.sha }}
   
