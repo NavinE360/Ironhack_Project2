@@ -73,6 +73,7 @@ jobs:
             rm -rf Ironhack_Project2
             git clone https://github.com/NavinE360/Ironhack_Project2.git
             cd Ironhack_Project2
+            cd k8s
          
           EOF
 
