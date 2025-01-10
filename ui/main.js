@@ -60,7 +60,7 @@ $(document).ready(function () {
 
         if (activeUser.id > 0) {
             $.ajax({
-                url: `${baseUrl}api/user/${activeUser.id}`,
+                url: `http://a7a812ac9b2f8469da85f41dd3645d75-250952805.us-west-1.elb.amazonaws.com/api/user/${activeUser.id}`,
                 type: "PUT",
                 data: JSON.stringify({ id: activeUser.id, name: name, email: email, age: age, address: address }),
                 dataType: "json",
@@ -70,7 +70,7 @@ $(document).ready(function () {
             });
         } else {
             $.ajax({
-                url: `${baseUrl}api/user`,
+                url: `http://a0807a113393a407cb6724284b5bd8eb-1382799903.us-west-1.elb.amazonaws.com/api/user/${activeUser.id}`,
                 type: "POST",
                 data: JSON.stringify({ id: 0, name: name, email: email, age: age, address: address }),
                 dataType: "json",
