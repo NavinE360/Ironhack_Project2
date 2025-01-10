@@ -13,7 +13,8 @@ jobs:
        
   deploy:
     runs-on: self-hosted  # Changed to self-hosted
-    needs: build
+    # docker-build-push
+  
 
     steps:
       # Step 1: Checkout code
