@@ -10,7 +10,7 @@ on:
 
 jobs:
   build-test-scan:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Code
@@ -29,8 +29,7 @@ jobs:
 
   docker-build-push:
     needs: build-test-scan
-    runs-on: selfhosted
-
+    runs-on: ubuntu-latest
     env:
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
       DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
