@@ -18,22 +18,31 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Set up SSH private key
+        env:
+          PRIVATE_KEY: ${{ secrets.EC2_KEY }}
+          HOSTNAME: ${{ secrets.EC2_HOST }}
+          USER_NAME: ${{ secrets.USER_NAME }}
         run: |
-          set -x
-          mkdir -p ~/.ssh
-          echo "${{ secrets.EC2_KEY }}" > ~/.ssh/tok.pem
-          chmod 600 ~/.ssh/tok.pem
-          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
-
-      - name: Deploy to EC2
-        run: |
-          set -x
-          ssh -i ~/.ssh/tok.pem ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
-            set -e
-            rm -rf Ironhack_Project2
-            git clone https://github.com/sakshi12oct/project2.git Ironhack_Project2
-            cd Ironhack_Project2
-          EOF
+          # Save private key to a file
+          echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
+          
+          # SSH into EC2 and execute deployment commands
+          ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} '
+              # Clone the new repository or update it if it already exists
+              cd /home/ubuntu || exit
+              if [ ! -d "Ironhack_Project2" ]; then
+                  git clone https://github.com/NavinE360/Ironhack_Project2.git
+              fi
+              cd Ironhack_Project2 &&
+              git checkout dev &&
+              git fetch --all &&
+              git reset --hard origin/dev &&
+              git pull origin dev &&
+              sudo npm install &&
+              sudo npm run build &&
+              sudo pm2 stop ./dist/index.js || true &&
+              sudo pm2 start ./dist/index.js
+          '
 
       - name: Update kubeconfig for EKS
         run: |
@@ -57,16 +66,6 @@ jobs:
           set -x
           kubectl apply -f k8s/frontend-deploy.yaml
           kubectl get pods -l app=ui --output wide
-
-      - name: Install Frontend Dependencies
-        run: |
-          set -x
-          ssh -i ~/.ssh/tok.pem ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
-            set -e
-            cd Ironhack_Project2/ui
-            npm init -y
-            npm install
-          EOF
 
       - name: Verify Backend Service is Running
         run: |
