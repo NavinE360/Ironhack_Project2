@@ -17,20 +17,24 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Set up AWS CLI
-        uses: aws-actions/configure-aws-credentials@v3
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
-
-      - name: Install kubectl
+      
+      - name: Set up SSH private key
         run: |
-          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-          chmod +x ./kubectl
-          sudo mv ./kubectl /usr/local/bin/kubectl
-          kubectl version --client
+         mkdir -p ~/.ssh
+         echo "${{ secrets.EC2_KEY }}" > ~/.ssh/tok.pem
+         chmod 600 ~/.ssh/tok.pem  # Set appropriate permissions for the private key
+        # ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+      - name: Deploy to EC2
+      
+        run: |
+          ssh -i ~/.ssh/tok.pem ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
+            rm -rf project2
+            git clone https://github.com/sakshi12oct/project2.git
+            
+            cd project2
+          EOF
 
+    
       - name: Update kubeconfig for EKS
         run: |
           aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name ${{ secrets.EKS_CLUSTER_NAME }}
